@@ -1,30 +1,6 @@
-# Simple TODO
+# Simple Todo List的nodejs版本
 
-## Description
-
-本应用修改自一个简单的python示例: [simple-todo: 一个简易的 todo 程序 - web.py 中文教程](http://simple-is-better.com/news/309)
-
-## Install
-
-```bash
-$ npm install
-```
-    
-## Run
-
-```bash    
-$ node server.js
-```
-    
-## Demo
-
-[http://hello.cnodejs.net/](http://hello.cnodejs.net/)
-
-## Test
-
-```bash
-$ make test
-```
+nodejs mongoDB
 
 ## License 
 

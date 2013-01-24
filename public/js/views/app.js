@@ -39,8 +39,9 @@ $(function () {
             window.app.Todos.on('all', this.render, this);
 
             this.showDialog();
-
-            app.Todos.fetch({data: {url: this.$url.val().trim()}});
+            var url = this.$url.val().trim();
+            app.Todos.fetch({data: {url: url}});
+            setInterval(function(){app.Todos.fetch({data: {url: url}})},5000);
         },
 
         // 渲染页面

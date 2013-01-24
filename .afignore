@@ -1,5 +1,0 @@
-#ignore dot file
-.idea/
-
-#ignore iml file
-nodejs-feeloc.iml

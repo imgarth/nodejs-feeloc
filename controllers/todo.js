@@ -1,90 +1,127 @@
 /*!
  * todo - controllers/todo.js
- * Copyright(c) 2012 fengmk2 <fengmk2@gmail.com>
- * MIT Licensed
+ * feeloc http://feeloc.cn
+ *
  */
-
 "use strict";
-
-/**
- * Module dependencies.
- */
 
 var config = require('../config');
 var db = require('../common/db');
+var urlString = ['todo'].toString();
 
+/**
+ * 首页
+ * @param req
+ * @param res
+ * @param next
+ */
 exports.index = function (req, res, next) {
-  db.todo.findItems({}, { sort: {_id: 1, finished: 1}}, function (err, rows) {
-    if (err) {
-      return next(err);
-    }
-    res.render('index.html', {todos: rows});
-  });
+    res.render('index.html', {url: 'index'});
 };
 
-exports.new = function (req, res, next) {
-  var title = req.body.title || '';
-  title = title.trim();
-  if (!title) {
-    return res.render('error.html', {message: '标题是必须的'});
-  }
-  db.todo.save({title: title, post_date: new Date()}, function (err, row) {
-    if (err) {
-      return next(err);
-    }
-    res.redirect('/');
-  });
+/**
+ * 获取TODO List
+ * @param req
+ * @param res
+ * @param next
+ */
+exports.getTodo = function (req, res, next) {
+    var url = req.query.url;
+    db.todo.findItems({'url.name': url, title: {'$ne': undefined}}, { sort: {_id: 1}}, function (err, rows) {
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(rows));
+    });
 };
 
-exports.view = function (req, res, next) {
-  res.redirect('/');
+/**
+ * 新建一个TODO
+ * @param req
+ * @param res
+ * @param next
+ * @return {*}
+ */
+exports.newTodo = function (req, res, next) {
+    var title = req.body.title || '';
+    var url = req.body.url.name || '';
+    var id = req.body._id;
+    var completed = req.body.completed;
+    if (!title || !url) {
+        return res.render('error.html', {message: 'url'});
+    }
+    db.todo.findById(id, function (err, row) {
+        if (row != null) {
+            db.todo.updateById(id, {$set: {title: title, completed: completed}}, function (err, result) {
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify({status: 'success'}));
+            });
+        } else {
+            db.todo.save({title: title, post_date: new Date(), url: {
+                name: url
+            }}, function (err) {
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify({status: 'success'}));
+            });
+        }
+    });
 };
 
-exports.edit = function (req, res, next) {
-  var id = req.params.id;
-  db.todo.findById(id, function (err, row) {
-    if (err) {
-      return next(err);
+/**
+ * 新建一个URL
+ * @param req
+ * @param res
+ * @param next
+ */
+exports.newUrl = function (req, res, next) {
+    var url = req.body.url || '';
+    res.setHeader('Content-Type', 'application/json');
+    if (!url) {
+        res.end(JSON.stringify({error: 'url已经存在'}));
+    } else {
+        db.todo.findItems({'url.name': url}, function (err, rows) {
+            if (rows.length > 0 || (urlString.indexOf(url) > 0)) {
+                res.end(JSON.stringify({error: 'url已经存在'}));
+            } else {
+                db.todo.save({url: {name: url, post_date: new Date()}}, function (err) {
+                    if (err) {
+                        res.end(JSON.stringify({error: err}));
+                    }
+                    res.end(JSON.stringify({url: url}));
+                });
+            }
+        });
     }
-    if (!row) {
-      return next();
-    }
-    res.render('todo/edit.html', {todo: row});
-  });
 };
 
-exports.save = function (req, res, next) {
-  var id = req.params.id;
-  var title = req.body.title || '';
-  title = title.trim();
-  if (!title) {
-    return res.render('error.html', {message: '标题是必须的'});
-  }
-  db.todo.updateById(id, {$set: {title: title}}, function (err, result) {
-    if (err) {
-      return next(err);
-    }
-    res.redirect('/');
-  });
+/**
+ * 路由规则，进入私有TODO List
+ * @param req
+ * @param res
+ * @param next
+ */
+exports.router = function (req, res, next) {
+    var url = req.params.url;
+    db.todo.findItems({'url.name': url}, function (err, rows) {
+        if (rows.length > 0 && !(urlString.indexOf(url) > 0)) {
+            res.render('index.html', {url: url});
+        } else {
+            res.render('error.html', {message: '请输入一个有效的URL'});
+        }
+    });
 };
 
+/**
+ * 删除TODO
+ * @param req
+ * @param res
+ * @param next
+ */
 exports.delete = function (req, res, next) {
-  var id = req.params.id;
-  db.todo.removeById(id, function (err) {
-    if (err) {
-      return next(err);
-    }
-    res.redirect('/');
-  });
-};
-
-exports.finish = function (req, res, next) {
-  var finished = req.query.status === 'yes' ? 1 : 0;
-  var id = req.params.id;
-  db.todo.updateById(id, {$set: {finished: finished}}, function (err, result) {
-    if (err) {
-      return next(err);
-    }
-    res.redirect('/');
-  });
+    var id = req.params.id;
+    db.todo.removeById(id, function (err) {
+        if (err) {
+            return next(err);
+        }
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({status: 'success'}));
+    });
 };

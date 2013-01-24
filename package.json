@@ -1,13 +1,13 @@
 {
   "private": true,
-  "author": "fengmk2 <fengmk2@gmail.com> (http://fengmk2.github.com/)",
+  "author": "feeloc <hjm1989@gmail.com> (http://www.feeloc.cn)",
   "name": "todo",
-  "description": "Very simple todo, demo for connect web dev.",
-  "version": "0.2.0",
-  "homepage": "http://github.com/fengmk2/todo",
+  "description": "一个简单的todo list，nodejs和mongoDB",
+  "version": "0.1.0",
+  "homepage": "https://github.com/feeloc/nodejs-feeloc",
   "repository": {
     "type": "git",
-    "url": "git://github.com/fengmk2/todo.git"
+    "url": "https://github.com/feeloc/nodejs-feeloc"
   },
   "main": "server.js",
   "scripts": {

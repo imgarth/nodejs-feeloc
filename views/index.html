@@ -1,37 +1,91 @@
-<div class="box">
-
-  <div class="box todos">
-    <h2 class="box">待办事项</h2>
-    <ul>
-      <% for (var i = 0, len = todos.length; i < len; i++) {
-        var todo = todos[i];
-        var status = todo.finished ? 'class="finished"' : '';
-      %>
-        <li <%- status %>>
-          <% if (!todo.finished) { %>
-            <%= todo.title %>
-            &nbsp;
-            <a href="/todo/<%- todo._id%>/finish?status=yes">完成</a>,
-          <% } else { %>
-            <del><%= todo.title %></del>
-            &nbsp;
-            <a href="/todo/<%- todo._id%>/finish?status=no">恢复</a>,
-          <% } %>
-          <a href="/todo/<%- todo._id%>/edit">修改</a>,
-          <a href="/todo/<%- todo._id%>/delete" onclick="return confirm('删除以后不能恢复的，确定？')">删除</a>
-        </li>
-      <% } %>
-    </ul>
-  </div>
-
-  <div class="box post">
-    <h2>新增</h2>
-    <form action="/todo/new" method="post" id="post_new">
-      <input type="hidden" name="_csrf" value="<%- _csrf %>" />
-      <p><input type="text" name="title" class="long_txt" /></p>
-      <p><input type="submit" class="submit" value="添加" /></p>
-    </form>
-  </div>
-
-</div>
-
+<!doctype html>
+<html lang="en">
+<head>
+    <title>简单TODO</title>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<link rel="stylesheet" href="/public/styles/base.css">
+	<!--[if IE]>
+	<script src="/public/js/ie.js"></script>
+	<![endif]-->
+</head>
+<body>
+	<section id="todoapp">
+		<header id="header">
+			<h1>todos</h1>
+			<input id="new-todo" placeholder="请填写任务?" autofocus>
+		</header>
+		<section id="main">
+			<input id="toggle-all" type="checkbox">
+			<label for="toggle-all">全部完成</label>
+			<ul id="todo-list"></ul>
+		</section>
+		<footer id="footer"></footer>
+	</section>
+    <a class="button" id="add-link" href="javascript:;">增</a>
+	<script type="text/template" id="item-template">
+		<div class="view">
+			<input class="toggle" type="checkbox" {%= completed ? 'checked' : '' %}>
+			<label>{%- title %}</label>
+			<button class="destroy"></button>
+		</div>
+		<input class="edit" value="{%- title %}">
+	</script>
+	<script type="text/template" id="stats-template">
+		<span id="todo-count"><strong>{%= remaining %}</strong>个任务未完成</span>
+		<ul id="filters">
+			<li>
+				<a class="selected" href="#/">全部</a>
+			</li>
+			<li>
+				<a href="#/active">未完成</a>
+			</li>
+			<li>
+				<a href="#/completed">已完成</a>
+			</li>
+		</ul>
+		{% if (completed) { %}
+		<button id="clear-completed">已完成 {%= completed %} 项目</button>
+		{% } %}
+	</script>
+    <div id="jcontent" style="display: none;">
+        <div id="mydiv">
+            <table class="form" id="add-todo">
+                <colgroup>
+                    <col width="100">
+                    <col width="19">
+                    <col width="">
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <td class="label"><span></span>TODO URL:</td>
+                        <td class="aster"></td>
+                        <td class="input">
+                            http://ctodo.cloudfoundry.com/<input type="text" class="text" id="url" name="" />
+                            <div id="url-error" class="submit-error">请填写URL！</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="btns">
+            <span class="submit-res" id="url-res">创建成功，现在跳转</span>
+            <input type="button" id="url-submit" class="okbtn w-btn" value="保存">
+        </div>
+    </div>
+    <input type="hidden" name="_csrf" id="_csrf" value="<%- _csrf %>"/>
+    <input type="hidden" name="url" id="domain" value="<%- url %>"/>
+	<script src="/public/js/jquery.min.js"></script>
+	<script src="/public/js/lodash.min.js"></script>
+    <script src="/public/js/jdialog.js"></script>
+	<script src="/public/js/lib/backbone-min.js"></script>
+    <script src="/public/js/models/todo.js"></script>
+    <script src="/public/js/models/url.js"></script>
+	<script src="/public/js/collections/todos.js"></script>
+    <script src="/public/js/collections/urls.js"></script>
+	<script src="/public/js/views/todos.js"></script>
+	<script src="/public/js/views/app.js"></script>
+	<script src="/public/js/routers/router.js"></script>
+    <script src="/public/js/app.js"></script>
+</body>
+</html>

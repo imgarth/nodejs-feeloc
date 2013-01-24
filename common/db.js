@@ -1,22 +1,21 @@
 /*!
  * todo - common/db.js
- * Copyright(c) 2012 fengmk2 <fengmk2@gmail.com>
- * MIT Licensed
+ * feeloc http://feeloc.cn
+ *
  */
 
 "use strict";
 
-/**
- * Module dependencies.
- */
-
 var mongoskin = require('mongoskin');
 var config = require('../config');
 
-var noop = function () {};
+var noop = function () {
+};
 
 var db = mongoskin.db(config.db);
 db.bind('todo');
-db.todo.ensureIndex({ finished: 1 }, noop);
+//建两个索引
+db.todo.ensureIndex({complete: 1}, noop);
+db.todo.ensureIndex({'url.name': 1}, noop);
 
 module.exports = db;

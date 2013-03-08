@@ -28,7 +28,7 @@ exports.index = function (req, res, next) {
 exports.getTodo = function (req, res, next) {
     var url = req.query.url;
     db.todo.findItems({'url.name': url, title: {'$ne': undefined}}, { sort: {_id: 1}}, function (err, rows) {
-        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Content-Type', 'application/json;charset=UTF-8');
         res.end(JSON.stringify(rows));
     });
 };
@@ -58,7 +58,7 @@ exports.newTodo = function (req, res, next) {
             db.todo.save({title: title, post_date: new Date(), url: {
                 name: url
             }}, function (err) {
-                res.setHeader('Content-Type', 'application/json');
+                res.setHeader('Content-Type', 'application/json;charset=UTF-8');
                 res.end(JSON.stringify({status: 'success'}));
             });
         }
@@ -73,7 +73,7 @@ exports.newTodo = function (req, res, next) {
  */
 exports.newUrl = function (req, res, next) {
     var url = req.body.url || '';
-    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Content-Type', 'application/json;charset=UTF-8');
     if (!url) {
         res.end(JSON.stringify({error: 'url已经存在'}));
     } else {
@@ -121,7 +121,21 @@ exports.delete = function (req, res, next) {
         if (err) {
             return next(err);
         }
-        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Content-Type', 'application/json;charset=UTF-8');
         res.end(JSON.stringify({status: 'success'}));
+    });
+};
+
+/**
+ * 获取所有数据
+ * @param req
+ * @param res
+ * @param next
+ */
+exports.getData = function (req, res, next) {
+    db.todo.findItems({}, { sort: {_id: 1}}, function (err, rows) {
+        res.setHeader("Access-Control-Allow-Origin","*");
+        res.setHeader('Content-Type', 'application/json;charset=UTF-8');
+        res.end(JSON.stringify(rows));
     });
 };

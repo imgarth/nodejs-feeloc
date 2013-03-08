@@ -41,7 +41,7 @@ $(function () {
             this.showDialog();
             var url = this.$url.val().trim();
             app.Todos.fetch({data: {url: url}});
-            setInterval(function(){app.Todos.fetch({data: {url: url}})},5000);
+            app.timer = setInterval(function(){app.Todos.fetch({data: {url: url}})},5000);
         },
 
         // 渲染页面

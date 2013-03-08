@@ -65,6 +65,7 @@ $(function () {
         edit: function () {
             this.$el.addClass('editing');
             this.input.focus();
+            clearTimeout(app.timer);
         },
 
         //  点击回车被调用的方法，更新Model中的title
@@ -79,6 +80,7 @@ $(function () {
             }
 
             this.$el.removeClass('editing');
+            app.timer = setInterval(function(){app.Todos.fetch({data: {url: url}})},5000);
         },
 
         // 判断键盘事件，如果是回国就调用close方法
